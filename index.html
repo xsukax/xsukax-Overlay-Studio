@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xsukax Overlay Studio</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif; background: #0d1117; color: #c9d1d9; line-height: 1.5; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        header { background: #161b22; border-bottom: 1px solid #30363d; padding: 16px 0; margin-bottom: 24px; }
+        .header-content { display: flex; align-items: center; justify-content: space-between; }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .brand-logo { font-size: 28px; font-weight: 700; color: #58a6ff; letter-spacing: -0.5px; }
+        h1 { font-size: 24px; font-weight: 600; color: #f0f6fc; }
+        .main-grid { display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
+        @media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } }
+        .sidebar { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 16px; height: fit-content; max-height: calc(100vh - 140px); overflow-y: auto; }
+        .canvas-area { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 16px; }
+        .section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #30363d; }
+        .section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .section-title { font-size: 14px; font-weight: 600; color: #f0f6fc; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .btn { background: #238636; color: #fff; border: none; border-radius: 6px; padding: 5px 16px; font-size: 14px; cursor: pointer; font-weight: 500; transition: background 0.2s; }
+        .btn:hover { background: #2ea043; }
+        .btn-secondary { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; }
+        .btn-secondary:hover { background: #30363d; border-color: #8b949e; }
+        .btn-primary { background: #1f6feb; }
+        .btn-primary:hover { background: #388bfd; }
+        .btn-danger { background: #da3633; }
+        .btn-danger:hover { background: #f85149; }
+        .btn-sm { padding: 3px 10px; font-size: 12px; }
+        .btn-icon { padding: 4px 8px; font-size: 16px; line-height: 1; }
+        .file-input-wrapper { position: relative; display: inline-block; width: 100%; margin-bottom: 12px; }
+        .file-input-wrapper input[type="file"] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+        .file-input-label { display: block; background: #21262d; border: 1px solid #30363d; border-radius: 6px; padding: 8px 12px; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 14px; }
+        .file-input-label:hover { background: #30363d; border-color: #8b949e; }
+        .overlay-item { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px; margin-bottom: 8px; transition: border-color 0.2s; }
+        .overlay-item:hover { border-color: #58a6ff; }
+        .overlay-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .overlay-title-section { display: flex; align-items: center; gap: 8px; flex: 1; }
+        .layer-badge { background: #30363d; color: #8b949e; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        .overlay-title { font-size: 13px; font-weight: 600; color: #58a6ff; }
+        .overlay-type { font-size: 11px; color: #8b949e; background: #21262d; padding: 2px 6px; border-radius: 3px; }
+        .overlay-controls { display: flex; gap: 6px; align-items: center; }
+        .layer-controls { display: flex; gap: 4px; }
+        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #30363d; transition: 0.3s; border-radius: 20px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: #c9d1d9; transition: 0.3s; border-radius: 50%; }
+        input:checked + .toggle-slider { background-color: #238636; }
+        input:checked + .toggle-slider:before { transform: translateX(20px); }
+        .form-group { margin-bottom: 10px; }
+        .form-label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 4px; font-weight: 500; }
+        .form-input { width: 100%; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 5px 12px; color: #c9d1d9; font-size: 14px; transition: border 0.2s; }
+        .form-input:focus { outline: none; border-color: #58a6ff; }
+        .form-select { width: 100%; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 5px 12px; color: #c9d1d9; font-size: 14px; transition: border 0.2s; cursor: pointer; }
+        .form-select:focus { outline: none; border-color: #58a6ff; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+        .checkbox-group input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+        .canvas-wrapper { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 400px; overflow: auto; }
+        #canvas { max-width: 100%; height: auto; border: 1px solid #30363d; background: repeating-conic-gradient(#1f2428 0% 25%, #0d1117 0% 50%) 50% / 20px 20px; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); }
+        .modal-content { background-color: #161b22; border: 1px solid #30363d; border-radius: 6px; margin: 10% auto; padding: 20px; max-width: 500px; }
+        .modal-header { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #f0f6fc; }
+        .modal-body { margin-bottom: 16px; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 8px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #8b949e; }
+        .project-info { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px; margin-bottom: 12px; font-size: 12px; color: #8b949e; }
+        .project-name { color: #58a6ff; font-weight: 600; margin-bottom: 4px; }
+        .style-options { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+        .header-actions { display: flex; gap: 8px; }
+        .add-buttons { display: flex; gap: 8px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="brand-logo">xsukax Overlay Studio</div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="showLoadProject()">📂 Load Project</button>
+                    <button class="btn btn-primary" onclick="saveProject()">💾 Save Project</button>
+                    <button class="btn" onclick="exportImage()">📥 Export PNG</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-grid">
+            <div class="sidebar">
+                <div class="section">
+                    <div class="section-title">Project</div>
+                    <div id="projectInfo" class="project-info">
+                        <div class="project-name">Untitled Project</div>
+                        <div id="projectStats">No background image loaded</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Background Image</div>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="bgImageInput" accept="image/*">
+                        <label for="bgImageInput" class="file-input-label">Choose Image</label>
+                    </div>
+                    <div id="bgImageName" style="font-size: 12px; color: #8b949e; text-align: center;"></div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">
+                        <span>Layers (Bottom to Top)</span>
+                        <div class="add-buttons">
+                            <button class="btn btn-sm" onclick="addTextOverlay()">+ Text</button>
+                            <button class="btn btn-sm" onclick="showAddImageOverlay()">+ Image</button>
+                        </div>
+                    </div>
+                    <div id="layersList"></div>
+                </div>
+            </div>
+
+            <div class="canvas-area">
+                <div class="canvas-wrapper">
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="imageOverlayModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Add Image Overlay</div>
+            <div class="modal-body">
+                <div class="file-input-wrapper">
+                    <input type="file" id="overlayImageInput" accept="image/*">
+                    <label for="overlayImageInput" class="file-input-label">Choose Image</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeImageOverlayModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadProjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Load Project</div>
+            <div class="modal-body">
+                <div class="file-input-wrapper">
+                    <input type="file" id="loadProjectInput" accept=".xoe">
+                    <label for="loadProjectInput" class="file-input-label">Choose .xoe file</label>
+                </div>
+                <div style="font-size: 12px; color: #8b949e; margin-top: 8px;">
+                    Load a previously saved xsukax Overlay Studio project
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeLoadProjectModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        const COMMON_FONTS = [
+            'Arial', 'Arial Black', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Impact',
+            'Times New Roman', 'Georgia', 'Palatino Linotype', 'Garamond',
+            'Comic Sans MS', 'Courier New', 'Courier', 'Lucida Console', 'Monaco',
+            'Brush Script MT', 'Helvetica', 'Century Gothic', 'Franklin Gothic Medium',
+            'Book Antiqua', 'Bookman Old Style', 'Lucida Sans Unicode', 'MS Sans Serif', 'MS Serif'
+        ];
+        
+        let projectName = 'Untitled Project';
+        let backgroundImage = null;
+        let backgroundImageData = null;
+        let layers = []; // Unified layer array - index 0 is bottom, last index is top
+        let nextLayerId = 1;
+
+        function sanitizeNumber(value, defaultValue = 0, min = null, max = null) {
+            const num = parseFloat(value);
+            if (isNaN(num)) return defaultValue;
+            if (min !== null && num < min) return min;
+            if (max !== null && num > max) return max;
+            return num;
+        }
+
+        function sanitizeColor(color) {
+            if (!color || typeof color !== 'string') return '#FF6B6B';
+            if (color.startsWith('#') && (color.length === 7 || color.length === 4)) return color;
+            return '#FF6B6B';
+        }
+
+        function sanitizeString(str, defaultValue = '') {
+            return (str !== null && str !== undefined) ? String(str) : defaultValue;
+        }
+
+        function sanitizeBoolean(value) {
+            return Boolean(value);
+        }
+
+        function updateProjectInfo() {
+            const textCount = layers.filter(l => l.type === 'text').length;
+            const imageCount = layers.filter(l => l.type === 'image').length;
+            const stats = backgroundImage 
+                ? `${canvas.width}×${canvas.height}px • ${textCount} text • ${imageCount} images • ${layers.length} layers`
+                : 'No background image loaded';
+            document.getElementById('projectStats').textContent = stats;
+        }
+
+        document.getElementById('bgImageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        backgroundImage = img;
+                        backgroundImageData = event.target.result;
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        document.getElementById('bgImageName').textContent = file.name;
+                        updateProjectInfo();
+                        render();
+                    };
+                    img.onerror = function() {
+                        console.error('Failed to load background image');
+                    };
+                    img.src = event.target.result;
+                };
+                reader.onerror = function() {
+                    console.error('Failed to read file');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function addTextOverlay() {
+            const layer = {
+                id: nextLayerId++,
+                type: 'text',
+                enabled: true,
+                text: 'Sample Text',
+                x: 50,
+                y: 50,
+                fontSize: 48,
+                fontFamily: 'Arial',
+                color: '#FF6B6B',
+                rotation: 0,
+                flipHorizontal: false,
+                flipVertical: false,
+                opacity: 255,
+                bold: false,
+                italic: false,
+                underline: false
+            };
+            layers.push(layer);
+            renderLayersList();
+            updateProjectInfo();
+            render();
+        }
+
+        function getFontOptionsHTML(selectedFont) {
+            return COMMON_FONTS.map(font => 
+                `<option value="${font}" ${font === selectedFont ? 'selected' : ''} style="font-family: '${font}';">${font}</option>`
+            ).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderLayersList() {
+            const list = document.getElementById('layersList');
+            if (layers.length === 0) {
+                list.innerHTML = '<div class="empty-state" style="padding: 20px;"><div style="font-size: 12px;">No layers added</div></div>';
+                return;
+            }
+
+            list.innerHTML = layers.map((layer, index) => {
+                const layerNumber = index + 1;
+                const isBottom = index === 0;
+                const isTop = index === layers.length - 1;
+
+                if (layer.type === 'text') {
+                    const safeText = escapeHtml(layer.text || 'Sample Text');
+                    return `
+                    <div class="overlay-item" id="layer-${layer.id}">
+                        <div class="overlay-header">
+                            <div class="overlay-title-section">
+                                <span class="layer-badge">L${layerNumber}</span>
+                                <span class="overlay-title">Text #${layer.id}</span>
+                                <span class="overlay-type">TEXT</span>
+                            </div>
+                            <div class="overlay-controls">
+                                <div class="layer-controls">
+                                    <button class="btn btn-secondary btn-icon" onclick="moveLayerUp(${layer.id})" ${isTop ? 'disabled' : ''} title="Move layer up">↑</button>
+                                    <button class="btn btn-secondary btn-icon" onclick="moveLayerDown(${layer.id})" ${isBottom ? 'disabled' : ''} title="Move layer down">↓</button>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${layer.enabled ? 'checked' : ''} onchange="toggleLayer(${layer.id})">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <button class="btn btn-danger btn-sm" onclick="removeLayer(${layer.id})">×</button>
+                            </div>
+                        </div>
+                        <div class="overlay-body">
+                            <div class="form-group">
+                                <label class="form-label">Text</label>
+                                <input type="text" class="form-input" value="${safeText}" oninput="updateLayer(${layer.id}, 'text', this.value)">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">X Position</label>
+                                    <input type="number" class="form-input" value="${layer.x}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'x', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Y Position</label>
+                                    <input type="number" class="form-input" value="${layer.y}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'y', this.value)">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Font Size</label>
+                                    <input type="number" class="form-input" value="${layer.fontSize}" min="1" max="500" oninput="updateLayer(${layer.id}, 'fontSize', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Opacity (0-255)</label>
+                                    <input type="number" class="form-input" min="0" max="255" value="${layer.opacity}" oninput="updateLayer(${layer.id}, 'opacity', this.value)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Font Family</label>
+                                <select class="form-select" onchange="updateLayer(${layer.id}, 'fontFamily', this.value)">
+                                    ${getFontOptionsHTML(layer.fontFamily)}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Text Style</label>
+                                <div class="style-options">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="bold-${layer.id}" ${layer.bold ? 'checked' : ''} onchange="updateLayer(${layer.id}, 'bold', this.checked)">
+                                        <label for="bold-${layer.id}"><strong>Bold</strong></label>
+                                    </div>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="italic-${layer.id}" ${layer.italic ? 'checked' : ''} onchange="updateLayer(${layer.id}, 'italic', this.checked)">
+                                        <label for="italic-${layer.id}"><em>Italic</em></label>
+                                    </div>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="underline-${layer.id}" ${layer.underline ? 'checked' : ''} onchange="updateLayer(${layer.id}, 'underline', this.checked)">
+                                        <label for="underline-${layer.id}"><u>Underline</u></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Color</label>
+                                <input type="color" class="form-input" value="${layer.color}" oninput="updateLayer(${layer.id}, 'color', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Rotation (degrees)</label>
+                                <input type="number" class="form-input" value="${layer.rotation}" min="-360" max="360" oninput="updateLayer(${layer.id}, 'rotation', this.value)">
+                            </div>
+                            <div class="form-row">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="flip-h-${layer.id}" ${layer.flipHorizontal ? 'checked' : ''} onchange="updateLayer(${layer.id}, 'flipHorizontal', this.checked)">
+                                    <label for="flip-h-${layer.id}">Flip H</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="flip-v-${layer.id}" ${layer.flipVertical ? 'checked' : ''} onchange="updateLayer(${layer.id}, 'flipVertical', this.checked)">
+                                    <label for="flip-v-${layer.id}">Flip V</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                } else if (layer.type === 'image') {
+                    const safeName = escapeHtml(layer.imageName || 'Image');
+                    return `
+                    <div class="overlay-item" id="layer-${layer.id}">
+                        <div class="overlay-header">
+                            <div class="overlay-title-section">
+                                <span class="layer-badge">L${layerNumber}</span>
+                                <span class="overlay-title">${safeName}</span>
+                                <span class="overlay-type">IMAGE</span>
+                            </div>
+                            <div class="overlay-controls">
+                                <div class="layer-controls">
+                                    <button class="btn btn-secondary btn-icon" onclick="moveLayerUp(${layer.id})" ${isTop ? 'disabled' : ''} title="Move layer up">↑</button>
+                                    <button class="btn btn-secondary btn-icon" onclick="moveLayerDown(${layer.id})" ${isBottom ? 'disabled' : ''} title="Move layer down">↓</button>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${layer.enabled ? 'checked' : ''} onchange="toggleLayer(${layer.id})">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <button class="btn btn-danger btn-sm" onclick="removeLayer(${layer.id})">×</button>
+                            </div>
+                        </div>
+                        <div class="overlay-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">X Position</label>
+                                    <input type="number" class="form-input" value="${layer.x}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'x', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Y Position</label>
+                                    <input type="number" class="form-input" value="${layer.y}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'y', this.value)">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Width</label>
+                                    <input type="number" class="form-input" value="${layer.width}" min="1" max="9999" oninput="updateLayer(${layer.id}, 'width', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Opacity (0-255)</label>
+                                    <input type="number" class="form-input" min="0" max="255" value="${layer.opacity}" oninput="updateLayer(${layer.id}, 'opacity', this.value)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Rotation (degrees)</label>
+                                <input type="number" class="form-input" value="${layer.rotation}" min="-360" max="360" oninput="updateLayer(${layer.id}, 'rotation', this.value)">
+                            </div>
+                            <div class="form-row">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="img-flip-h-${layer.id}" ${layer.flipHorizontal ? 'checked' : ''} onchange="updateLayer(${layer.id}, 'flipHorizontal', this.checked)">
+                                    <label for="img-flip-h-${layer.id}">Flip H</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="img-flip-v-${layer.id}" ${layer.flipVertical ? 'checked' : ''} onchange="updateLayer(${layer.id}, 'flipVertical', this.checked)">
+                                    <label for="img-flip-v-${layer.id}">Flip V</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                }
+            }).join('');
+        }
+
+        function updateLayer(id, prop, value) {
+            const layer = layers.find(l => l.id === id);
+            if (layer) {
+                switch(prop) {
+                    case 'x':
+                    case 'y':
+                        layer[prop] = sanitizeNumber(value, layer[prop], -9999, 9999);
+                        break;
+                    case 'fontSize':
+                        layer[prop] = sanitizeNumber(value, layer[prop], 1, 500);
+                        break;
+                    case 'width':
+                        layer[prop] = sanitizeNumber(value, layer[prop], 1, 9999);
+                        break;
+                    case 'opacity':
+                        layer[prop] = sanitizeNumber(value, layer[prop], 0, 255);
+                        break;
+                    case 'rotation':
+                        layer[prop] = sanitizeNumber(value, layer[prop], -360, 360);
+                        break;
+                    case 'color':
+                        layer[prop] = sanitizeColor(value);
+                        break;
+                    case 'bold':
+                    case 'italic':
+                    case 'underline':
+                    case 'flipHorizontal':
+                    case 'flipVertical':
+                        layer[prop] = sanitizeBoolean(value);
+                        break;
+                    default:
+                        layer[prop] = value;
+                }
+                render();
+            }
+        }
+
+        function toggleLayer(id) {
+            const layer = layers.find(l => l.id === id);
+            if (layer) {
+                layer.enabled = !layer.enabled;
+                render();
+            }
+        }
+
+        function removeLayer(id) {
+            layers = layers.filter(l => l.id !== id);
+            renderLayersList();
+            updateProjectInfo();
+            render();
+        }
+
+        function moveLayerUp(id) {
+            const index = layers.findIndex(l => l.id === id);
+            if (index < layers.length - 1) {
+                [layers[index], layers[index + 1]] = [layers[index + 1], layers[index]];
+                renderLayersList();
+                render();
+            }
+        }
+
+        function moveLayerDown(id) {
+            const index = layers.findIndex(l => l.id === id);
+            if (index > 0) {
+                [layers[index], layers[index - 1]] = [layers[index - 1], layers[index]];
+                renderLayersList();
+                render();
+            }
+        }
+
+        function showAddImageOverlay() {
+            document.getElementById('imageOverlayModal').style.display = 'block';
+        }
+
+        function closeImageOverlayModal() {
+            document.getElementById('imageOverlayModal').style.display = 'none';
+            document.getElementById('overlayImageInput').value = '';
+        }
+
+        document.getElementById('overlayImageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const layer = {
+                            id: nextLayerId++,
+                            type: 'image',
+                            enabled: true,
+                            image: img,
+                            imageData: event.target.result,
+                            imageName: file.name,
+                            x: 50,
+                            y: 50,
+                            width: 150,
+                            rotation: 0,
+                            flipHorizontal: false,
+                            flipVertical: false,
+                            opacity: 255
+                        };
+                        layers.push(layer);
+                        renderLayersList();
+                        updateProjectInfo();
+                        render();
+                        closeImageOverlayModal();
+                    };
+                    img.onerror = function() {
+                        console.error('Failed to load overlay image');
+                        closeImageOverlayModal();
+                    };
+                    img.src = event.target.result;
+                };
+                reader.onerror = function() {
+                    console.error('Failed to read file');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function buildFontString(layer) {
+            const styles = [];
+            if (layer.italic) styles.push('italic');
+            if (layer.bold) styles.push('bold');
+            styles.push(`${layer.fontSize}px`);
+            styles.push(`"${layer.fontFamily}"`);
+            return styles.join(' ');
+        }
+
+        function render() {
+            if (!backgroundImage) {
+                const w = canvas.width || 800;
+                const h = canvas.height || 600;
+                ctx.fillStyle = '#0d1117';
+                ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = '#8b949e';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Upload a background image to start', w / 2, h / 2);
+                return;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(backgroundImage, 0, 0);
+
+            // Render all layers in order (bottom to top)
+            layers.filter(l => l.enabled).forEach(layer => {
+                ctx.save();
+
+                try {
+                    ctx.globalAlpha = layer.opacity / 255;
+
+                    if (layer.type === 'text') {
+                        ctx.translate(layer.x, layer.y);
+                        ctx.rotate(layer.rotation * Math.PI / 180);
+                        if (layer.flipHorizontal || layer.flipVertical) {
+                            ctx.scale(layer.flipHorizontal ? -1 : 1, layer.flipVertical ? -1 : 1);
+                        }
+                        ctx.font = buildFontString(layer);
+                        ctx.fillStyle = layer.color;
+                        ctx.textBaseline = 'top';
+                        ctx.fillText(layer.text, 0, 0);
+                        
+                        if (layer.underline) {
+                            const metrics = ctx.measureText(layer.text);
+                            const textWidth = metrics.width;
+                            const underlineY = layer.fontSize + 2;
+                            const underlineThickness = Math.max(1, layer.fontSize / 20);
+                            ctx.beginPath();
+                            ctx.moveTo(0, underlineY);
+                            ctx.lineTo(textWidth, underlineY);
+                            ctx.strokeStyle = layer.color;
+                            ctx.lineWidth = underlineThickness;
+                            ctx.stroke();
+                        }
+                    } else if (layer.type === 'image' && layer.image) {
+                        const aspectRatio = layer.image.height / layer.image.width;
+                        const height = layer.width * aspectRatio;
+                        ctx.translate(layer.x + layer.width / 2, layer.y + height / 2);
+                        ctx.rotate(layer.rotation * Math.PI / 180);
+                        if (layer.flipHorizontal || layer.flipVertical) {
+                            ctx.scale(layer.flipHorizontal ? -1 : 1, layer.flipVertical ? -1 : 1);
+                        }
+                        ctx.drawImage(layer.image, -layer.width / 2, -height / 2, layer.width, height);
+                    }
+                } catch (error) {
+                    console.error('Error rendering layer:', error);
+                }
+
+                ctx.restore();
+            });
+        }
+
+        function saveProject() {
+            try {
+                const project = {
+                    version: '2.0',
+                    app: 'xsukax Overlay Studio',
+                    projectName: projectName,
+                    canvasWidth: canvas.width,
+                    canvasHeight: canvas.height,
+                    backgroundImage: backgroundImageData,
+                    layers: layers.map((l, index) => {
+                        const baseData = {
+                            id: l.id,
+                            type: l.type,
+                            enabled: l.enabled,
+                            layerOrder: index,
+                            x: l.x,
+                            y: l.y,
+                            rotation: l.rotation,
+                            flipHorizontal: l.flipHorizontal,
+                            flipVertical: l.flipVertical,
+                            opacity: l.opacity
+                        };
+
+                        if (l.type === 'text') {
+                            return {
+                                ...baseData,
+                                text: l.text,
+                                fontSize: l.fontSize,
+                                fontFamily: l.fontFamily,
+                                color: l.color,
+                                bold: l.bold,
+                                italic: l.italic,
+                                underline: l.underline
+                            };
+                        } else if (l.type === 'image') {
+                            return {
+                                ...baseData,
+                                imageData: l.imageData,
+                                imageName: l.imageName,
+                                width: l.width
+                            };
+                        }
+                    }),
+                    savedAt: new Date().toISOString()
+                };
+
+                const jsonStr = JSON.stringify(project, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${projectName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.xoe`;
+                link.click();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error saving project:', error);
+            }
+        }
+
+        function showLoadProject() {
+            document.getElementById('loadProjectModal').style.display = 'block';
+        }
+
+        function closeLoadProjectModal() {
+            document.getElementById('loadProjectModal').style.display = 'none';
+            document.getElementById('loadProjectInput').value = '';
+        }
+
+        document.getElementById('loadProjectInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const project = JSON.parse(event.target.result);
+                        
+                        projectName = sanitizeString(project.projectName, 'Untitled Project');
+                        document.querySelector('.project-name').textContent = projectName;
+                        
+                        if (project.backgroundImage) {
+                            const img = new Image();
+                            img.onload = function() {
+                                backgroundImage = img;
+                                backgroundImageData = project.backgroundImage;
+                                canvas.width = sanitizeNumber(project.canvasWidth, img.width, 1, 9999);
+                                canvas.height = sanitizeNumber(project.canvasHeight, img.height, 1, 9999);
+                                document.getElementById('bgImageName').textContent = 'Loaded from project';
+                                
+                                layers = [];
+                                nextLayerId = 1;
+
+                                if (project.layers && Array.isArray(project.layers)) {
+                                    // Sort by layerOrder to ensure correct sequence
+                                    const sortedLayers = project.layers.sort((a, b) => 
+                                        (a.layerOrder || 0) - (b.layerOrder || 0)
+                                    );
+
+                                    // Pre-allocate array with nulls to maintain order
+                                    const tempLayers = new Array(sortedLayers.length).fill(null);
+                                    let loadedCount = 0;
+
+                                    sortedLayers.forEach((l, originalIndex) => {
+                                        if (l.type === 'text') {
+                                            const textLayer = {
+                                                id: sanitizeNumber(l.id, nextLayerId),
+                                                type: 'text',
+                                                enabled: sanitizeBoolean(l.enabled),
+                                                text: sanitizeString(l.text, 'Sample Text'),
+                                                x: sanitizeNumber(l.x, 50),
+                                                y: sanitizeNumber(l.y, 50),
+                                                fontSize: sanitizeNumber(l.fontSize, 48, 1, 500),
+                                                fontFamily: sanitizeString(l.fontFamily, 'Arial'),
+                                                color: sanitizeColor(l.color),
+                                                rotation: sanitizeNumber(l.rotation, 0),
+                                                flipHorizontal: sanitizeBoolean(l.flipHorizontal),
+                                                flipVertical: sanitizeBoolean(l.flipVertical),
+                                                opacity: sanitizeNumber(l.opacity, 255, 0, 255),
+                                                bold: sanitizeBoolean(l.bold),
+                                                italic: sanitizeBoolean(l.italic),
+                                                underline: sanitizeBoolean(l.underline)
+                                            };
+                                            tempLayers[originalIndex] = textLayer;
+                                            if (l.id >= nextLayerId) nextLayerId = l.id + 1;
+                                            
+                                            loadedCount++;
+                                            if (loadedCount === sortedLayers.length) {
+                                                layers = tempLayers.filter(l => l !== null);
+                                                renderLayersList();
+                                                updateProjectInfo();
+                                                render();
+                                                closeLoadProjectModal();
+                                            }
+                                        } else if (l.type === 'image') {
+                                            const img = new Image();
+                                            img.onload = function() {
+                                                const imageLayer = {
+                                                    id: sanitizeNumber(l.id, nextLayerId),
+                                                    type: 'image',
+                                                    enabled: sanitizeBoolean(l.enabled),
+                                                    image: img,
+                                                    imageData: l.imageData,
+                                                    imageName: sanitizeString(l.imageName, 'Image'),
+                                                    x: sanitizeNumber(l.x, 50),
+                                                    y: sanitizeNumber(l.y, 50),
+                                                    width: sanitizeNumber(l.width, 150, 1, 9999),
+                                                    rotation: sanitizeNumber(l.rotation, 0),
+                                                    flipHorizontal: sanitizeBoolean(l.flipHorizontal),
+                                                    flipVertical: sanitizeBoolean(l.flipVertical),
+                                                    opacity: sanitizeNumber(l.opacity, 255, 0, 255)
+                                                };
+                                                tempLayers[originalIndex] = imageLayer;
+                                                if (l.id >= nextLayerId) nextLayerId = l.id + 1;
+                                                
+                                                loadedCount++;
+                                                if (loadedCount === sortedLayers.length) {
+                                                    layers = tempLayers.filter(l => l !== null);
+                                                    renderLayersList();
+                                                    updateProjectInfo();
+                                                    render();
+                                                    closeLoadProjectModal();
+                                                }
+                                            };
+                                            img.onerror = function() {
+                                                console.error('Failed to load overlay image');
+                                                loadedCount++;
+                                                if (loadedCount === sortedLayers.length) {
+                                                    layers = tempLayers.filter(l => l !== null);
+                                                    renderLayersList();
+                                                    updateProjectInfo();
+                                                    render();
+                                                    closeLoadProjectModal();
+                                                }
+                                            };
+                                            img.src = l.imageData;
+                                        }
+                                    });
+                                } else {
+                                    // Legacy format support (v1.0) - convert to new format
+                                    const legacyLayers = [];
+                                    if (project.textOverlays && Array.isArray(project.textOverlays)) {
+                                        project.textOverlays.forEach((o, idx) => {
+                                            legacyLayers.push({ ...o, type: 'text', layerOrder: idx });
+                                        });
+                                    }
+                                    if (project.imageOverlays && Array.isArray(project.imageOverlays)) {
+                                        const offset = legacyLayers.length;
+                                        project.imageOverlays.forEach((o, idx) => {
+                                            legacyLayers.push({ ...o, type: 'image', layerOrder: offset + idx });
+                                        });
+                                    }
+                                    
+                                    // Process legacy layers using same logic as above
+                                    if (legacyLayers.length > 0) {
+                                        const tempLayers = new Array(legacyLayers.length).fill(null);
+                                        let loadedCount = 0;
+
+                                        legacyLayers.forEach((l, originalIndex) => {
+                                            if (l.type === 'text') {
+                                                const textLayer = {
+                                                    id: sanitizeNumber(l.id, nextLayerId),
+                                                    type: 'text',
+                                                    enabled: sanitizeBoolean(l.enabled),
+                                                    text: sanitizeString(l.text, 'Sample Text'),
+                                                    x: sanitizeNumber(l.x, 50),
+                                                    y: sanitizeNumber(l.y, 50),
+                                                    fontSize: sanitizeNumber(l.fontSize, 48, 1, 500),
+                                                    fontFamily: sanitizeString(l.fontFamily, 'Arial'),
+                                                    color: sanitizeColor(l.color),
+                                                    rotation: sanitizeNumber(l.rotation, 0),
+                                                    flipHorizontal: sanitizeBoolean(l.flipHorizontal),
+                                                    flipVertical: sanitizeBoolean(l.flipVertical),
+                                                    opacity: sanitizeNumber(l.opacity, 255, 0, 255),
+                                                    bold: sanitizeBoolean(l.bold),
+                                                    italic: sanitizeBoolean(l.italic),
+                                                    underline: sanitizeBoolean(l.underline)
+                                                };
+                                                tempLayers[originalIndex] = textLayer;
+                                                if (l.id >= nextLayerId) nextLayerId = l.id + 1;
+                                                
+                                                loadedCount++;
+                                                if (loadedCount === legacyLayers.length) {
+                                                    layers = tempLayers.filter(l => l !== null);
+                                                    renderLayersList();
+                                                    updateProjectInfo();
+                                                    render();
+                                                    closeLoadProjectModal();
+                                                }
+                                            } else if (l.type === 'image') {
+                                                const img = new Image();
+                                                img.onload = function() {
+                                                    const imageLayer = {
+                                                        id: sanitizeNumber(l.id, nextLayerId),
+                                                        type: 'image',
+                                                        enabled: sanitizeBoolean(l.enabled),
+                                                        image: img,
+                                                        imageData: l.imageData,
+                                                        imageName: sanitizeString(l.imageName, 'Image'),
+                                                        x: sanitizeNumber(l.x, 50),
+                                                        y: sanitizeNumber(l.y, 50),
+                                                        width: sanitizeNumber(l.width, 150, 1, 9999),
+                                                        rotation: sanitizeNumber(l.rotation, 0),
+                                                        flipHorizontal: sanitizeBoolean(l.flipHorizontal),
+                                                        flipVertical: sanitizeBoolean(l.flipVertical),
+                                                        opacity: sanitizeNumber(l.opacity, 255, 0, 255)
+                                                    };
+                                                    tempLayers[originalIndex] = imageLayer;
+                                                    if (l.id >= nextLayerId) nextLayerId = l.id + 1;
+                                                    
+                                                    loadedCount++;
+                                                    if (loadedCount === legacyLayers.length) {
+                                                        layers = tempLayers.filter(l => l !== null);
+                                                        renderLayersList();
+                                                        updateProjectInfo();
+                                                        render();
+                                                        closeLoadProjectModal();
+                                                    }
+                                                };
+                                                img.onerror = function() {
+                                                    console.error('Failed to load overlay image');
+                                                    loadedCount++;
+                                                    if (loadedCount === legacyLayers.length) {
+                                                        layers = tempLayers.filter(l => l !== null);
+                                                        renderLayersList();
+                                                        updateProjectInfo();
+                                                        render();
+                                                        closeLoadProjectModal();
+                                                    }
+                                                };
+                                                img.src = l.imageData;
+                                            }
+                                        });
+                                    }
+                                }
+                            };
+                            img.onerror = function() {
+                                console.error('Failed to load background image from project');
+                                closeLoadProjectModal();
+                            };
+                            img.src = project.backgroundImage;
+                        } else {
+                            closeLoadProjectModal();
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error loading project:', error);
+                        closeLoadProjectModal();
+                    }
+                };
+                reader.onerror = function() {
+                    console.error('Error reading project file');
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function exportImage() {
+            if (!backgroundImage) return;
+            try {
+                const link = document.createElement('a');
+                link.download = `${projectName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (error) {
+                console.error('Error exporting image:', error);
+            }
+        }
+
+        canvas.width = 800;
+        canvas.height = 600;
+        renderLayersList();
+        updateProjectInfo();
+        render();
+    </script>
+</body>
+</html>
