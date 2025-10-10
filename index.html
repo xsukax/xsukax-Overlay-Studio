@@ -36,6 +36,7 @@
         .file-input-label:hover { background: #30363d; border-color: #8b949e; }
         .overlay-item { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px; margin-bottom: 8px; transition: border-color 0.2s; }
         .overlay-item:hover { border-color: #58a6ff; }
+        .overlay-item.dragging { border-color: #58a6ff; background: #161b22; }
         .overlay-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
         .overlay-title-section { display: flex; align-items: center; gap: 8px; flex: 1; }
         .layer-badge { background: #30363d; color: #8b949e; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
@@ -59,7 +60,8 @@
         .checkbox-group { display: flex; align-items: center; gap: 8px; font-size: 12px; }
         .checkbox-group input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
         .canvas-wrapper { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 400px; overflow: auto; }
-        #canvas { max-width: 100%; height: auto; border: 1px solid #30363d; background: repeating-conic-gradient(#1f2428 0% 25%, #0d1117 0% 50%) 50% / 20px 20px; }
+        #canvas { max-width: 100%; height: auto; border: 1px solid #30363d; background: repeating-conic-gradient(#1f2428 0% 25%, #0d1117 0% 50%) 50% / 20px 20px; cursor: default; }
+        #canvas.grabbing { cursor: grabbing; }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); }
         .modal-content { background-color: #161b22; border: 1px solid #30363d; border-radius: 6px; margin: 10% auto; padding: 20px; max-width: 500px; }
         .modal-header { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #f0f6fc; }
@@ -71,6 +73,7 @@
         .style-options { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
         .header-actions { display: flex; gap: 8px; }
         .add-buttons { display: flex; gap: 8px; }
+        .drag-hint { font-size: 11px; color: #58a6ff; margin-top: 4px; text-align: center; }
     </style>
 </head>
 <body>
@@ -111,12 +114,13 @@
 
                 <div class="section">
                     <div class="section-title">
-                        <span>Layers (Bottom to Top)</span>
+                        <span>Layers (Top to Bottom)</span>
                         <div class="add-buttons">
                             <button class="btn btn-sm" onclick="addTextOverlay()">+ Text</button>
                             <button class="btn btn-sm" onclick="showAddImageOverlay()">+ Image</button>
                         </div>
                     </div>
+                    <div class="drag-hint">💡 Drag layers on canvas to reposition</div>
                     <div id="layersList"></div>
                 </div>
             </div>
@@ -152,9 +156,7 @@
                     <input type="file" id="loadProjectInput" accept=".xoe">
                     <label for="loadProjectInput" class="file-input-label">Choose .xoe file</label>
                 </div>
-                <div style="font-size: 12px; color: #8b949e; margin-top: 8px;">
-                    Load a previously saved xsukax Overlay Studio project
-                </div>
+                <div style="font-size: 12px; color: #8b949e; margin-top: 8px;">Load a previously saved xsukax Overlay Studio project</div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeLoadProjectModal()">Cancel</button>
@@ -166,19 +168,18 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         
-        const COMMON_FONTS = [
-            'Arial', 'Arial Black', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Impact',
-            'Times New Roman', 'Georgia', 'Palatino Linotype', 'Garamond',
-            'Comic Sans MS', 'Courier New', 'Courier', 'Lucida Console', 'Monaco',
-            'Brush Script MT', 'Helvetica', 'Century Gothic', 'Franklin Gothic Medium',
-            'Book Antiqua', 'Bookman Old Style', 'Lucida Sans Unicode', 'MS Sans Serif', 'MS Serif'
-        ];
+        const COMMON_FONTS = ['Arial', 'Arial Black', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Impact', 'Times New Roman', 'Georgia', 'Palatino Linotype', 'Garamond', 'Comic Sans MS', 'Courier New', 'Courier', 'Lucida Console', 'Monaco', 'Brush Script MT', 'Helvetica', 'Century Gothic', 'Franklin Gothic Medium', 'Book Antiqua', 'Bookman Old Style', 'Lucida Sans Unicode', 'MS Sans Serif', 'MS Serif'];
         
         let projectName = 'Untitled Project';
         let backgroundImage = null;
         let backgroundImageData = null;
-        let layers = []; // Unified layer array - index 0 is bottom, last index is top
+        let layers = [];
         let nextLayerId = 1;
+        
+        let isDragging = false;
+        let draggedLayerId = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
 
         function sanitizeNumber(value, defaultValue = 0, min = null, max = null) {
             const num = parseFloat(value);
@@ -209,6 +210,17 @@
                 ? `${canvas.width}×${canvas.height}px • ${textCount} text • ${imageCount} images • ${layers.length} layers`
                 : 'No background image loaded';
             document.getElementById('projectStats').textContent = stats;
+        }
+
+        function updateLayerInputs(layerId) {
+            const layer = layers.find(l => l.id === layerId);
+            if (!layer) return;
+            
+            const xInput = document.querySelector(`#layer-${layerId} input[data-prop="x"]`);
+            const yInput = document.querySelector(`#layer-${layerId} input[data-prop="y"]`);
+            
+            if (xInput) xInput.value = Math.round(layer.x);
+            if (yInput) yInput.value = Math.round(layer.y);
         }
 
         document.getElementById('bgImageInput').addEventListener('change', function(e) {
@@ -282,15 +294,19 @@
                 return;
             }
 
-            list.innerHTML = layers.map((layer, index) => {
-                const layerNumber = index + 1;
-                const isBottom = index === 0;
-                const isTop = index === layers.length - 1;
+            const reversedLayers = layers.slice().reverse();
+            
+            list.innerHTML = reversedLayers.map((layer, displayIndex) => {
+                const actualIndex = layers.length - 1 - displayIndex;
+                const layerNumber = actualIndex + 1;
+                const isBottom = actualIndex === 0;
+                const isTop = actualIndex === layers.length - 1;
+                const isDraggingClass = draggedLayerId === layer.id ? 'dragging' : '';
 
                 if (layer.type === 'text') {
                     const safeText = escapeHtml(layer.text || 'Sample Text');
                     return `
-                    <div class="overlay-item" id="layer-${layer.id}">
+                    <div class="overlay-item ${isDraggingClass}" id="layer-${layer.id}">
                         <div class="overlay-header">
                             <div class="overlay-title-section">
                                 <span class="layer-badge">L${layerNumber}</span>
@@ -317,11 +333,11 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">X Position</label>
-                                    <input type="number" class="form-input" value="${layer.x}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'x', this.value)">
+                                    <input type="number" class="form-input" data-prop="x" value="${Math.round(layer.x)}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'x', this.value)">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Y Position</label>
-                                    <input type="number" class="form-input" value="${layer.y}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'y', this.value)">
+                                    <input type="number" class="form-input" data-prop="y" value="${Math.round(layer.y)}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'y', this.value)">
                                 </div>
                             </div>
                             <div class="form-row">
@@ -381,7 +397,7 @@
                 } else if (layer.type === 'image') {
                     const safeName = escapeHtml(layer.imageName || 'Image');
                     return `
-                    <div class="overlay-item" id="layer-${layer.id}">
+                    <div class="overlay-item ${isDraggingClass}" id="layer-${layer.id}">
                         <div class="overlay-header">
                             <div class="overlay-title-section">
                                 <span class="layer-badge">L${layerNumber}</span>
@@ -404,11 +420,11 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">X Position</label>
-                                    <input type="number" class="form-input" value="${layer.x}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'x', this.value)">
+                                    <input type="number" class="form-input" data-prop="x" value="${Math.round(layer.x)}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'x', this.value)">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Y Position</label>
-                                    <input type="number" class="form-input" value="${layer.y}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'y', this.value)">
+                                    <input type="number" class="form-input" data-prop="y" value="${Math.round(layer.y)}" min="-9999" max="9999" oninput="updateLayer(${layer.id}, 'y', this.value)">
                                 </div>
                             </div>
                             <div class="form-row">
@@ -571,6 +587,105 @@
             return styles.join(' ');
         }
 
+        function getLayerBounds(layer) {
+            if (layer.type === 'text') {
+                ctx.font = buildFontString(layer);
+                const metrics = ctx.measureText(layer.text);
+                const textWidth = metrics.width;
+                const textHeight = layer.fontSize;
+                return {
+                    x: layer.x,
+                    y: layer.y,
+                    width: textWidth,
+                    height: textHeight
+                };
+            } else if (layer.type === 'image' && layer.image) {
+                const aspectRatio = layer.image.height / layer.image.width;
+                const height = layer.width * aspectRatio;
+                return {
+                    x: layer.x,
+                    y: layer.y,
+                    width: layer.width,
+                    height: height
+                };
+            }
+            return null;
+        }
+
+        function isPointInLayer(x, y, layer) {
+            if (!layer.enabled) return false;
+            const bounds = getLayerBounds(layer);
+            if (!bounds) return false;
+            
+            return x >= bounds.x && x <= bounds.x + bounds.width &&
+                   y >= bounds.y && y <= bounds.y + bounds.height;
+        }
+
+        function getLayerAtPoint(x, y) {
+            for (let i = layers.length - 1; i >= 0; i--) {
+                if (isPointInLayer(x, y, layers[i])) {
+                    return layers[i];
+                }
+            }
+            return null;
+        }
+
+        canvas.addEventListener('mousedown', function(e) {
+            if (!backgroundImage) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            
+            const layer = getLayerAtPoint(x, y);
+            if (layer) {
+                isDragging = true;
+                draggedLayerId = layer.id;
+                dragOffsetX = x - layer.x;
+                dragOffsetY = y - layer.y;
+                canvas.classList.add('grabbing');
+                renderLayersList();
+            }
+        });
+
+        canvas.addEventListener('mousemove', function(e) {
+            if (!isDragging || !draggedLayerId) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            
+            const layer = layers.find(l => l.id === draggedLayerId);
+            if (layer) {
+                layer.x = x - dragOffsetX;
+                layer.y = y - dragOffsetY;
+                updateLayerInputs(draggedLayerId);
+                render();
+            }
+        });
+
+        canvas.addEventListener('mouseup', function() {
+            if (isDragging) {
+                isDragging = false;
+                draggedLayerId = null;
+                canvas.classList.remove('grabbing');
+                renderLayersList();
+            }
+        });
+
+        canvas.addEventListener('mouseleave', function() {
+            if (isDragging) {
+                isDragging = false;
+                draggedLayerId = null;
+                canvas.classList.remove('grabbing');
+                renderLayersList();
+            }
+        });
+
         function render() {
             if (!backgroundImage) {
                 const w = canvas.width || 800;
@@ -588,7 +703,6 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(backgroundImage, 0, 0);
 
-            // Render all layers in order (bottom to top)
             layers.filter(l => l.enabled).forEach(layer => {
                 ctx.save();
 
@@ -728,12 +842,10 @@
                                 nextLayerId = 1;
 
                                 if (project.layers && Array.isArray(project.layers)) {
-                                    // Sort by layerOrder to ensure correct sequence
                                     const sortedLayers = project.layers.sort((a, b) => 
                                         (a.layerOrder || 0) - (b.layerOrder || 0)
                                     );
 
-                                    // Pre-allocate array with nulls to maintain order
                                     const tempLayers = new Array(sortedLayers.length).fill(null);
                                     let loadedCount = 0;
 
@@ -812,102 +924,6 @@
                                             img.src = l.imageData;
                                         }
                                     });
-                                } else {
-                                    // Legacy format support (v1.0) - convert to new format
-                                    const legacyLayers = [];
-                                    if (project.textOverlays && Array.isArray(project.textOverlays)) {
-                                        project.textOverlays.forEach((o, idx) => {
-                                            legacyLayers.push({ ...o, type: 'text', layerOrder: idx });
-                                        });
-                                    }
-                                    if (project.imageOverlays && Array.isArray(project.imageOverlays)) {
-                                        const offset = legacyLayers.length;
-                                        project.imageOverlays.forEach((o, idx) => {
-                                            legacyLayers.push({ ...o, type: 'image', layerOrder: offset + idx });
-                                        });
-                                    }
-                                    
-                                    // Process legacy layers using same logic as above
-                                    if (legacyLayers.length > 0) {
-                                        const tempLayers = new Array(legacyLayers.length).fill(null);
-                                        let loadedCount = 0;
-
-                                        legacyLayers.forEach((l, originalIndex) => {
-                                            if (l.type === 'text') {
-                                                const textLayer = {
-                                                    id: sanitizeNumber(l.id, nextLayerId),
-                                                    type: 'text',
-                                                    enabled: sanitizeBoolean(l.enabled),
-                                                    text: sanitizeString(l.text, 'Sample Text'),
-                                                    x: sanitizeNumber(l.x, 50),
-                                                    y: sanitizeNumber(l.y, 50),
-                                                    fontSize: sanitizeNumber(l.fontSize, 48, 1, 500),
-                                                    fontFamily: sanitizeString(l.fontFamily, 'Arial'),
-                                                    color: sanitizeColor(l.color),
-                                                    rotation: sanitizeNumber(l.rotation, 0),
-                                                    flipHorizontal: sanitizeBoolean(l.flipHorizontal),
-                                                    flipVertical: sanitizeBoolean(l.flipVertical),
-                                                    opacity: sanitizeNumber(l.opacity, 255, 0, 255),
-                                                    bold: sanitizeBoolean(l.bold),
-                                                    italic: sanitizeBoolean(l.italic),
-                                                    underline: sanitizeBoolean(l.underline)
-                                                };
-                                                tempLayers[originalIndex] = textLayer;
-                                                if (l.id >= nextLayerId) nextLayerId = l.id + 1;
-                                                
-                                                loadedCount++;
-                                                if (loadedCount === legacyLayers.length) {
-                                                    layers = tempLayers.filter(l => l !== null);
-                                                    renderLayersList();
-                                                    updateProjectInfo();
-                                                    render();
-                                                    closeLoadProjectModal();
-                                                }
-                                            } else if (l.type === 'image') {
-                                                const img = new Image();
-                                                img.onload = function() {
-                                                    const imageLayer = {
-                                                        id: sanitizeNumber(l.id, nextLayerId),
-                                                        type: 'image',
-                                                        enabled: sanitizeBoolean(l.enabled),
-                                                        image: img,
-                                                        imageData: l.imageData,
-                                                        imageName: sanitizeString(l.imageName, 'Image'),
-                                                        x: sanitizeNumber(l.x, 50),
-                                                        y: sanitizeNumber(l.y, 50),
-                                                        width: sanitizeNumber(l.width, 150, 1, 9999),
-                                                        rotation: sanitizeNumber(l.rotation, 0),
-                                                        flipHorizontal: sanitizeBoolean(l.flipHorizontal),
-                                                        flipVertical: sanitizeBoolean(l.flipVertical),
-                                                        opacity: sanitizeNumber(l.opacity, 255, 0, 255)
-                                                    };
-                                                    tempLayers[originalIndex] = imageLayer;
-                                                    if (l.id >= nextLayerId) nextLayerId = l.id + 1;
-                                                    
-                                                    loadedCount++;
-                                                    if (loadedCount === legacyLayers.length) {
-                                                        layers = tempLayers.filter(l => l !== null);
-                                                        renderLayersList();
-                                                        updateProjectInfo();
-                                                        render();
-                                                        closeLoadProjectModal();
-                                                    }
-                                                };
-                                                img.onerror = function() {
-                                                    console.error('Failed to load overlay image');
-                                                    loadedCount++;
-                                                    if (loadedCount === legacyLayers.length) {
-                                                        layers = tempLayers.filter(l => l !== null);
-                                                        renderLayersList();
-                                                        updateProjectInfo();
-                                                        render();
-                                                        closeLoadProjectModal();
-                                                    }
-                                                };
-                                                img.src = l.imageData;
-                                            }
-                                        });
-                                    }
                                 }
                             };
                             img.onerror = function() {
