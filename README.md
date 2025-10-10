@@ -1,528 +1,507 @@
 # xsukax Overlay Studio
 
-A privacy-focused, client-side web application for creating professional image overlays with text and image layers. Built as a single HTML file with zero external dependencies, ensuring complete data sovereignty and offline functionality.
+A powerful, privacy-focused, client-side image overlay editor that runs entirely in your web browser. Create professional image compositions with text and image layers without uploading your content to any server.
 
 ![xsukax](https://img.shields.io/badge/xsukax-Overlay%20Studio-orange)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Canvas API](https://img.shields.io/badge/Canvas-API-green)](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
+![Version](https://img.shields.io/badge/version-2.0-blue)
+![License](https://img.shields.io/badge/license-GPL%20v3.0-green)
+![Platform](https://img.shields.io/badge/platform-Web-orange)
 
-## 📋 Project Overview
+## Project Overview
 
-xsukax Overlay Studio is a browser-based image composition tool designed for content creators, streamers, designers, and anyone who needs to add professional overlays to images. The application provides an intuitive interface for layering text and images onto a background, with comprehensive controls for positioning, styling, and transforming each element.
+**xsukax Overlay Studio** is a single-file web application designed for creating sophisticated image overlays with multiple layers of text and images. Built with vanilla JavaScript and HTML5 Canvas, this tool provides a comprehensive layer-based editing system that operates entirely within your browser, ensuring complete privacy and control over your creative assets.
 
-Built entirely with vanilla JavaScript and HTML5 Canvas, the application runs completely in the browser without requiring any server-side processing, external libraries, or internet connection after initial load. This architecture ensures maximum privacy, security, and performance.
+The application is ideal for content creators, streamers, designers, and anyone who needs to add professional overlays to images without relying on cloud-based services or installing heavy desktop software.
 
-### Core Capabilities
+### Core Functionality
 
-- **Background Image Management**: Upload and use any image as a canvas background
-- **Text Layer System**: Add multiple text overlays with extensive typography controls
-- **Image Layer System**: Overlay additional images with precise positioning and transformations
-- **Advanced Layer Management**: Reorder layers, toggle visibility, and fine-tune each element independently
-- **Project Persistence**: Save complete projects as portable `.xoe` files for future editing
-- **High-Quality Export**: Generate pixel-perfect PNG exports of your final compositions
+- **Background Image Management**: Load any image as your canvas foundation
+- **Text Layer System**: Add unlimited customizable text overlays with full typography control
+- **Image Layer System**: Composite multiple images with precise positioning and transformation
+- **Layer Management**: Organize, reorder, and toggle visibility of all layers
+- **Project Persistence**: Save and load your work in a portable `.xoe` format
+- **Export Capabilities**: Generate high-quality PNG files of your final composition
 
-## 🔒 Security and Privacy Benefits
+## Security and Privacy Benefits
 
-xsukax Overlay Studio is architected with a privacy-first philosophy, ensuring that user data never leaves the local environment:
+xsukax Overlay Studio is built with security and privacy as fundamental design principles:
 
-### Client-Side Architecture
+### Complete Client-Side Processing
 
-- **Zero Server Communication**: All image processing, layer management, and rendering occur entirely within the browser's JavaScript runtime
-- **No External Dependencies**: The application contains no CDN links, third-party scripts, or external resource requests
-- **No Telemetry or Analytics**: Absolutely no user tracking, behavior monitoring, or data collection mechanisms
-- **No Authentication Required**: No user accounts, login systems, or cloud storage integrations
+All image processing, manipulation, and rendering occur exclusively within your web browser. **No data ever leaves your device**. This architecture provides:
+
+- **Zero Server Dependencies**: No backend servers, databases, or cloud storage involved
+- **No Data Transmission**: Your images, text, and project files remain entirely on your local machine
+- **Offline Capability**: Once loaded, the application functions without an internet connection
+- **No Third-Party Services**: No external APIs, CDNs, or tracking libraries
+
+### Privacy-First Architecture
+
+```mermaid
+graph LR
+    A[Your Device] --> B[Browser]
+    B --> C[xsukax Overlay Studio]
+    C --> D[Local File System]
+    C --> E[Canvas Rendering]
+    D --> C
+    E --> D
+    style A fill:#2ea043,stroke:#1f6feb,color:#fff
+    style B fill:#1f6feb,stroke:#1f6feb,color:#fff
+    style C fill:#238636,stroke:#238636,color:#fff
+    style D fill:#da3633,stroke:#da3633,color:#fff
+    style E fill:#da3633,stroke:#da3633,color:#fff
+```
+
+- **No Telemetry**: Zero tracking, analytics, or usage monitoring
+- **No Account Required**: No registration, login, or personal information collection
+- **No Watermarks**: Your exported images are completely yours
+- **Open Source Transparency**: Full source code visibility for security auditing
 
 ### Data Sovereignty
 
-- **Local-Only Storage**: Images are processed and stored exclusively in browser memory during active sessions
-- **No Automatic Uploads**: Files are never transmitted to external servers or cloud services
-- **User-Controlled Persistence**: Project data is saved only when explicitly requested by the user, as local `.xoe` files
-- **Portable Project Format**: Project files are JSON-based and can be archived, backed up, or version-controlled by the user
+You maintain complete control over your creative work:
 
-### Offline Functionality
+- Images never uploaded to external servers
+- Project files stored locally with your chosen naming and location
+- Exports saved directly to your device
+- No retention policies or terms of service regarding your content
 
-- **Complete Offline Operation**: Once loaded, the application functions without internet connectivity
-- **No Remote Resource Dependencies**: All fonts, icons, and UI elements are embedded or use system defaults
-- **Airgapped Environment Compatible**: Suitable for use in isolated networks or high-security environments
+## Features and Advantages
 
-### Browser Security Model
+### Layer-Based Editing System
 
-- **Sandboxed Execution**: Runs within the browser's security sandbox with standard web API protections
-- **FileReader API**: Safely processes user-selected files through browser-native APIs
-- **Canvas Isolation**: Image processing occurs in isolated Canvas contexts without DOM exposure
-
-## ✨ Features and Advantages
-
-### Layer Management
-
-- **Unified Layer System**: Manage all text and image layers in a single, intuitive stack
-- **Visual Layer Hierarchy**: Clearly labeled layers with order indicators (L1, L2, L3, etc.)
-- **Flexible Reordering**: Move layers up or down in the stack with single-click controls
-- **Toggle Visibility**: Enable or disable layers without deletion for iterative design
-- **Individual Layer Controls**: Each layer has dedicated controls for all properties
+- **Unlimited Layers**: Add as many text and image layers as needed
+- **Visual Layer Management**: Intuitive interface showing all layers with real-time previews
+- **Layer Reordering**: Move layers up or down in the stack with arrow controls
+- **Toggle Visibility**: Enable/disable individual layers without deletion
+- **Drag-and-Drop Positioning**: Click and drag any layer directly on the canvas
 
 ### Text Overlay Capabilities
 
-- **Rich Typography**: Support for 24+ common font families including serif, sans-serif, and monospace options
-- **Font Styling**: Bold, italic, and underline text decorations
-- **Precise Positioning**: Numeric X/Y coordinate controls with sub-pixel accuracy
-- **Font Size Control**: Adjustable from 1px to 500px for any design requirement
-- **Color Customization**: Full color picker with hex color support
-- **Rotation**: 360-degree rotation with negative and positive angle support
-- **Flip Transformations**: Independent horizontal and vertical flipping
-- **Opacity Control**: Fine-grained transparency from 0 (invisible) to 255 (opaque)
+Comprehensive text customization options:
 
-### Image Overlay Capabilities
+- **Typography Control**: Choose from 25+ common font families
+- **Size Flexibility**: Font sizes from 1px to 500px
+- **Color Selection**: Full spectrum color picker
+- **Text Styling**: Bold, italic, and underline formatting
+- **Rotation**: Rotate text from -360° to 360°
+- **Flipping**: Horizontal and vertical flip transformations
+- **Opacity Control**: Adjust transparency from 0-255 (0-100%)
+- **Precise Positioning**: Pixel-perfect X/Y coordinate control
 
-- **Multiple Image Support**: Add unlimited image overlays to compositions
-- **Aspect Ratio Preservation**: Automatic height calculation maintains original proportions
-- **Width Scaling**: Resize images from 1px to 9999px width
-- **Rotation and Flipping**: Same transformation controls as text layers
-- **Opacity Control**: Blend images seamlessly with adjustable transparency
+### Image Overlay Features
+
+- **Aspect Ratio Preservation**: Images maintain proportions when resized
+- **Width Adjustment**: Scale images while preserving aspect ratio
+- **Transform Controls**: Rotation and flipping options
+- **Transparency**: Opacity adjustment for blending effects
+- **Free Positioning**: Place images anywhere on the canvas
 
 ### Project Management
 
-- **JSON-Based Format**: Projects saved as human-readable JSON with `.xoe` extension
-- **Version Compatibility**: Supports both v1.0 (legacy) and v2.0 project formats
-- **Embedded Assets**: Background and overlay images stored as Base64 data URIs within project files
-- **Metadata Preservation**: Stores canvas dimensions, layer properties, and project metadata
-- **Cross-Platform Compatibility**: Project files work identically across Windows, macOS, and Linux
+- **Save Projects**: Export complete projects as `.xoe` files
+- **Load Projects**: Resume work on saved projects with all layers intact
+- **Project Information**: Track canvas dimensions and layer statistics
+- **Export to PNG**: Generate final images in universal PNG format
 
-### User Interface
+### User Experience
 
-- **Dark Theme Design**: Modern, GitHub-inspired dark UI optimized for extended use
-- **Responsive Layout**: Adapts to different screen sizes with collapsible sidebar
-- **Checkerboard Canvas**: Transparent background visualization for precise layer positioning
-- **Real-Time Preview**: Instant visual feedback as properties are adjusted
-- **Keyboard-Friendly**: Standard form controls for efficient keyboard navigation
+- **Dark Theme Interface**: Modern, GitHub-inspired dark UI reduces eye strain
+- **Real-Time Preview**: See changes instantly on the canvas
+- **Responsive Layout**: Adapts to different screen sizes
+- **No Learning Curve**: Intuitive controls require minimal instruction
+- **Zero Dependencies**: No installation, plugins, or additional software required
 
-### Export Options
+### Performance Benefits
 
-- **PNG Export**: High-quality raster export with full transparency support
-- **Canvas Resolution**: Exports at original background image resolution
-- **Sanitized Filenames**: Automatic filename generation from project name
+- **Lightweight**: Single 35KB HTML file
+- **Fast Loading**: No external resources to download
+- **Efficient Rendering**: Optimized HTML5 Canvas operations
+- **No Lag**: Client-side processing eliminates network latency
 
-## 💻 Installation Instructions
+## Installation Instructions
 
-xsukax Overlay Studio requires no traditional installation process. Follow these steps to begin using the application:
+xsukax Overlay Studio requires no traditional installation. Follow these simple steps:
 
-### Method 1: Direct Download
+### Method 1: Direct Download (Recommended)
 
-1. **Download the Application**:
+1. **Download the File**
    ```bash
+   # Clone the repository
    git clone https://github.com/xsukax/xsukax-Overlay-Studio.git
    cd xsukax-Overlay-Studio
    ```
 
-2. **Open in Browser**:
-   - Locate the `index.html` file in the downloaded directory
-   - Double-click the file to open it in your default web browser
-   - Alternatively, right-click and select "Open with" to choose a specific browser
+2. **Open in Browser**
+   - Double-click `index.html` to open in your default browser
+   - Or right-click → "Open with" → Select your preferred browser
 
-### Method 2: Single File Usage
+### Method 2: GitHub Download
 
-1. **Download Only the HTML File**:
-   - Navigate to the repository on GitHub
-   - Open `index.html` and click the "Raw" button
-   - Save the file (Ctrl+S or Cmd+S) to your desired location
+1. Navigate to the [GitHub repository](https://github.com/xsukax/xsukax-Overlay-Studio)
+2. Click the green "Code" button
+3. Select "Download ZIP"
+4. Extract the ZIP file
+5. Open `index.html` in any modern web browser
 
-2. **Launch the Application**:
-   - Simply open the saved HTML file in any modern web browser
+### Method 3: Direct Use
+
+1. Visit the [GitHub repository](https://github.com/xsukax/xsukax-Overlay-Studio)
+2. Click on `index.html`
+3. Click "Raw" button
+4. Save the page (Ctrl+S / Cmd+S)
+5. Open the saved file in your browser
 
 ### System Requirements
 
-- **Browser**: Any modern browser supporting HTML5 Canvas API
-  - Chrome 90+ (recommended)
-  - Firefox 88+
-  - Safari 14+
-  - Edge 90+
-- **Operating System**: Windows 7+, macOS 10.12+, Linux (any modern distribution)
-- **Memory**: 2GB RAM minimum (4GB+ recommended for large images)
-- **Storage**: Minimal (single ~50KB HTML file)
+**Minimum Requirements:**
+- Any modern web browser (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
+- JavaScript enabled
+- HTML5 Canvas support
 
-### No Server Required
+**Recommended:**
+- Desktop or laptop computer for optimal experience
+- Screen resolution of 1280x720 or higher
+- Mouse for drag-and-drop functionality
 
-The application runs entirely in the browser without requiring:
-- Web server setup
-- Node.js or npm
-- PHP, Python, or other server-side runtimes
-- Database configuration
-- Environment variables
+**Supported Platforms:**
+- Windows 7/8/10/11
+- macOS 10.13+
+- Linux (any distribution)
+- ChromeOS
 
-## 📖 Usage Guide
+## Usage Guide
 
-### Basic Workflow
+### Getting Started
 
 ```mermaid
-graph TD
-    A[Open Application] --> B[Upload Background Image]
+flowchart TD
+    A[Open index.html] --> B[Upload Background Image]
     B --> C{Add Layers}
-    C --> D[Add Text Layer]
-    C --> E[Add Image Layer]
-    D --> F[Configure Properties]
+    C -->|Text| D[Add Text Overlay]
+    C -->|Image| E[Add Image Overlay]
+    D --> F[Customize Properties]
     E --> F
-    F --> G{Satisfied?}
-    G -->|No| H[Adjust Layers]
-    H --> F
-    G -->|Yes| I[Save Project or Export PNG]
-    I --> J{Save for Later?}
-    J -->|Yes| K[Save as .xoe]
-    J -->|No| L[Export as PNG]
+    F --> G[Position on Canvas]
+    G --> H{More Layers?}
+    H -->|Yes| C
+    H -->|No| I[Export or Save]
+    I -->|Export| J[Download PNG]
+    I -->|Save| K[Download .xoe Project]
+    style A fill:#1f6feb,stroke:#1f6feb,color:#fff
+    style B fill:#238636,stroke:#238636,color:#fff
+    style I fill:#da3633,stroke:#da3633,color:#fff
 ```
 
-### Step-by-Step Instructions
+### Step-by-Step Workflow
 
 #### 1. Loading a Background Image
 
-The background image serves as the canvas for your composition:
+1. Click the **"Choose Image"** button under "Background Image"
+2. Select an image file from your computer (PNG, JPG, GIF, etc.)
+3. The canvas automatically resizes to match your image dimensions
+4. The filename appears below the button
 
-1. Click the **"Choose Image"** button in the "Background Image" section
-2. Select an image file from your computer (JPG, PNG, GIF, WebP supported)
-3. The canvas will automatically resize to match the background image dimensions
-4. Image information will display in the "Project" section
+#### 2. Adding Text Layers
 
-**Note**: All subsequent layers will be positioned relative to this background.
+1. Click **"+ Text"** button in the Layers section
+2. A new text layer appears with default settings
+3. Customize the text layer properties:
+   - **Text**: Enter your desired text
+   - **Position (X, Y)**: Set precise coordinates
+   - **Font Size**: Adjust from 1-500px
+   - **Font Family**: Choose from dropdown menu
+   - **Color**: Click color picker to select
+   - **Rotation**: Enter degrees (-360 to 360)
+   - **Opacity**: Set transparency (0-255)
+   - **Styling**: Enable bold, italic, or underline
+   - **Flip**: Toggle horizontal or vertical flip
 
-#### 2. Adding Text Overlays
+#### 3. Adding Image Layers
 
-Create text elements with full typographic control:
+1. Click **"+ Image"** button in the Layers section
+2. Click **"Choose Image"** in the modal dialog
+3. Select an image file to use as overlay
+4. Customize the image layer properties:
+   - **Position (X, Y)**: Set precise coordinates
+   - **Width**: Adjust size (height scales automatically)
+   - **Rotation**: Enter degrees (-360 to 360)
+   - **Opacity**: Set transparency (0-255)
+   - **Flip**: Toggle horizontal or vertical flip
 
-1. Click the **"+ Text"** button in the "Layers" section
-2. A new text layer appears with default properties
-3. Configure the text layer using the following controls:
+#### 4. Positioning Layers
 
-   **Content and Positioning**:
-   - **Text**: Enter the desired text content
-   - **X Position**: Horizontal position in pixels (negative values allowed)
-   - **Y Position**: Vertical position in pixels (negative values allowed)
+**Method 1: Manual Input**
+- Enter precise X and Y coordinates in the layer controls
+- Values update in real-time on the canvas
 
-   **Typography**:
-   - **Font Size**: Size in pixels (1-500px range)
-   - **Font Family**: Select from dropdown of 24 common fonts
-   - **Text Style**: Toggle Bold, Italic, and Underline independently
-   - **Color**: Click the color picker to select any hex color
+**Method 2: Drag and Drop**
+- Click and hold any layer on the canvas
+- Drag to desired position
+- Release to drop
+- Coordinates update automatically in the layer controls
 
-   **Transformations**:
-   - **Rotation**: Angle in degrees (-360° to 360°)
-   - **Flip H**: Horizontal flip (mirror)
-   - **Flip V**: Vertical flip (invert)
-   - **Opacity**: Transparency level (0 = invisible, 255 = opaque)
-
-#### 3. Adding Image Overlays
-
-Layer additional images onto your composition:
-
-1. Click the **"+ Image"** button in the "Layers" section
-2. The image overlay modal appears
-3. Click **"Choose Image"** and select an image file
-4. The image layer is added with default properties
-5. Configure the image layer:
-
-   **Positioning and Sizing**:
-   - **X Position**: Horizontal position in pixels
-   - **Y Position**: Vertical position in pixels
-   - **Width**: Image width in pixels (height auto-calculated to maintain aspect ratio)
-
-   **Transformations**:
-   - **Rotation**: Angle in degrees
-   - **Flip H/V**: Horizontal and vertical flipping
-   - **Opacity**: Transparency control
-
-#### 4. Managing Layer Order
-
-Layers are rendered from bottom to top (L1 is underneath L2, etc.):
-
-```mermaid
-graph LR
-    A[Background Image] --> B[Layer 1 - Bottom]
-    B --> C[Layer 2]
-    C --> D[Layer 3]
-    D --> E[Layer 4 - Top]
-    style A fill:#ccc
-    style B fill:#ccc
-    style C fill:#ccc
-    style D fill:#ccc
-    style E fill:#58a6ff
-```
-
-**Layer Controls**:
-- **↑ Button**: Move layer up one position (toward top)
-- **↓ Button**: Move layer down one position (toward bottom)
-- **Toggle Switch**: Enable or disable layer visibility
-- **× Button**: Permanently delete the layer
-
-#### 5. Saving Projects
-
-Preserve your work for future editing:
-
-1. Click **"💾 Save Project"** in the header
-2. A `.xoe` file is automatically downloaded
-3. The filename is based on your project name (default: "untitled_project.xoe")
-4. Store this file in your preferred location
-
-**Project File Contents**:
-- Complete canvas configuration
-- All layer properties and order
-- Embedded background and overlay images (Base64)
-- Metadata and version information
-
-#### 6. Loading Saved Projects
-
-Resume work on previously saved compositions:
-
-1. Click **"📂 Load Project"** in the header
-2. Click **"Choose .xoe file"** in the modal
-3. Select your saved project file
-4. The application restores:
-   - Background image
-   - All layers with exact properties
-   - Layer order and visibility states
-
-**Compatibility**: The application supports both v1.0 and v2.0 project formats for backward compatibility.
-
-#### 7. Exporting Final Images
-
-Generate high-quality PNG files:
-
-1. Ensure all layers are configured as desired
-2. Toggle off any layers you don't want in the final export
-3. Click **"📥 Export PNG"** in the header
-4. A PNG file downloads with the current canvas composition
-5. The export resolution matches the background image dimensions
-
-### Advanced Techniques
-
-#### Precise Layer Positioning
-
-For pixel-perfect alignment:
-- Use negative coordinates to position elements partially off-canvas
-- Combine rotation with flipping for complex transformations
-- Adjust opacity for layering effects and watermarks
-
-#### Layer Organization Strategy
-
-```mermaid
-graph TD
-    A[Background Layer] --> B[Base Graphics - Lower Layers]
-    B --> C[Text Content - Middle Layers]
-    C --> D[Decorative Elements - Upper Layers]
-    D --> E[Watermarks/Signatures - Top Layer]
-```
-
-Organize layers logically:
-1. Keep background-related elements at the bottom
-2. Place primary content in the middle
-3. Position decorative overlays near the top
-4. Reserve the topmost layer for watermarks or signatures
-
-#### Batch Processing Workflow
-
-For multiple similar compositions:
-1. Create a template project with common elements
-2. Save as a base `.xoe` file
-3. For each new composition:
-   - Load the template
-   - Replace the background image
-   - Adjust layer-specific content
-   - Export and save as a new project
-
-### Keyboard Shortcuts
-
-Standard browser shortcuts apply:
-- **Ctrl/Cmd + S**: Triggers browser save (use "Save Project" button instead)
-- **Tab**: Navigate between form controls
-- **Enter**: Activate focused button
-- **Escape**: Close modals (where applicable)
-
-## 🛠️ Technical Architecture
-
-### Application Structure
+#### 5. Managing Layer Order
 
 ```mermaid
 graph TB
-    A[index.html] --> B[HTML Structure]
-    A --> C[CSS Styling]
-    A --> D[JavaScript Logic]
-    
-    B --> B1[Header]
-    B --> B2[Sidebar]
-    B --> B3[Canvas Area]
-    B --> B4[Modals]
-    
-    C --> C1[GitHub Dark Theme]
-    C --> C2[Responsive Layout]
-    
-    D --> D1[Canvas Rendering]
-    D --> D2[Layer Management]
-    D --> D3[File I/O]
-    D --> D4[State Management]
-    
-    D1 --> E[HTML5 Canvas API]
-    D3 --> F[FileReader API]
-    D3 --> G[Blob API]
+    A[Layer Stack] --> B[Top Layer - Renders Last]
+    B --> C[Middle Layers]
+    C --> D[Bottom Layer - Renders First]
+    D --> E[Background Image]
+    style B fill:#2ea043,stroke:#2ea043,color:#fff
+    style D fill:#da3633,stroke:#da3633,color:#fff
+    style E fill:#1f6feb,stroke:#1f6feb,color:#fff
 ```
 
-### Core Technologies
+- **Move Up (↑)**: Brings layer forward in render order
+- **Move Down (↓)**: Sends layer backward in render order
+- Layers at the top of the list render on top of layers below
+- Background image always renders first (bottom layer)
 
-- **HTML5 Canvas**: High-performance 2D rendering engine
-- **FileReader API**: Secure client-side file reading
-- **Blob API**: Binary data handling for exports
-- **Canvas 2D Context**: Drawing operations and transformations
-- **Base64 Encoding**: Image data serialization for project files
+#### 6. Layer Visibility Control
+
+- Toggle switch next to each layer
+- **Green** = Layer visible and rendered
+- **Gray** = Layer hidden but preserved
+- Hidden layers don't appear in exports
+
+#### 7. Removing Layers
+
+- Click the **"×"** button on any layer to delete it permanently
+- Deletion is immediate and cannot be undone
+- Consider saving your project before removing layers
+
+#### 8. Saving Your Project
+
+1. Click **"💾 Save Project"** in the header
+2. A `.xoe` file downloads automatically
+3. The file contains:
+   - All layer configurations
+   - Background image (embedded)
+   - All overlay images (embedded)
+   - Project metadata
+
+**File Format**: `.xoe` (xsukax Overlay Editor format)
+- JSON-based structure
+- Human-readable
+- Includes all assets as base64-encoded data
+
+#### 9. Loading Saved Projects
+
+1. Click **"📂 Load Project"** in the header
+2. Click **"Choose .xoe file"** in the modal
+3. Select your previously saved `.xoe` file
+4. All layers, images, and settings restore automatically
+
+#### 10. Exporting Final Images
+
+1. Click **"📥 Export PNG"** in the header
+2. A PNG file downloads automatically
+3. The exported image includes:
+   - Background image
+   - All enabled layers rendered in order
+   - Exact canvas dimensions
+   - Full quality (no compression loss)
+
+**Export Specifications:**
+- Format: PNG (Portable Network Graphics)
+- Color Depth: 24-bit RGB
+- Transparency: Supported
+- Resolution: Matches canvas dimensions
+
+### Keyboard Shortcuts
+
+Currently, all operations use mouse/touch input. Future versions may include:
+- Ctrl/Cmd + S for saving
+- Ctrl/Cmd + E for exporting
+- Arrow keys for precise positioning
+- Delete key for layer removal
+
+### Best Practices
+
+**For Optimal Results:**
+
+1. **Use High-Quality Source Images**: Start with high-resolution backgrounds
+2. **Organize Layers Logically**: Name your project files descriptively
+3. **Save Frequently**: Create project backups before major changes
+4. **Test Opacity**: Use transparency to blend layers naturally
+5. **Mind the Canvas Size**: Larger canvases produce better quality but require more memory
+
+**Common Workflows:**
+
+- **Stream Overlays**: Add text alerts and branding to streaming backgrounds
+- **Social Media Graphics**: Create thumbnail images with text overlays
+- **Product Mockups**: Composite product images with descriptive text
+- **Event Flyers**: Design promotional graphics with layered elements
+- **Watermarking**: Add signature text or logo images to photographs
+
+### Troubleshooting
+
+**Issue: Background image won't load**
+- Ensure file is a valid image format (PNG, JPG, GIF, WebP)
+- Check file isn't corrupted
+- Try a smaller file size
+
+**Issue: Text appears cut off**
+- Increase canvas size by using a larger background image
+- Adjust text position to fit within canvas bounds
+
+**Issue: Export appears blank**
+- Ensure background image is loaded
+- Check that at least one layer is enabled
+- Verify browser supports Canvas.toDataURL()
+
+**Issue: Project won't load**
+- Confirm file extension is `.xoe`
+- Verify file isn't corrupted
+- Check JSON structure if manually edited
+
+**Issue: Dragging doesn't work**
+- Ensure JavaScript is enabled
+- Try clicking directly on the layer element
+- Check browser console for errors
+
+## Browser Compatibility
+
+| Browser | Minimum Version | Recommended | Notes |
+|---------|----------------|-------------|-------|
+| Chrome | 90+ | Latest | Best performance |
+| Firefox | 88+ | Latest | Full support |
+| Safari | 14+ | Latest | Fully compatible |
+| Edge | 90+ | Latest | Chromium-based |
+| Opera | 76+ | Latest | Chromium-based |
+
+**Not Supported:**
+- Internet Explorer (all versions)
+- Legacy Edge (pre-Chromium)
+
+## Technical Architecture
+
+### Technology Stack
+
+```mermaid
+graph TD
+    A[HTML5] --> D[xsukax Overlay Studio]
+    B[CSS3] --> D
+    C[Vanilla JavaScript] --> D
+    D --> E[Canvas API]
+    D --> F[File API]
+    D --> G[Local Storage]
+    style A fill:#f85149,stroke:#f85149,color:#fff
+    style B fill:#388bfd,stroke:#388bfd,color:#fff
+    style C fill:#f0b72f,stroke:#f0b72f,color:#000
+    style D fill:#2ea043,stroke:#2ea043,color:#fff
+```
+
+- **Frontend**: Pure HTML5, CSS3, Vanilla JavaScript
+- **Rendering Engine**: HTML5 Canvas 2D Context
+- **File Handling**: FileReader API, Blob API
+- **Data Format**: JSON with Base64-encoded images
+- **No Dependencies**: Zero external libraries or frameworks
 
 ### Data Flow
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant UI
-    participant State
-    participant Canvas
+    participant Browser
     participant FileSystem
+    participant Canvas
     
-    User->>UI: Upload Background
-    UI->>State: Update backgroundImage
-    State->>Canvas: Trigger render()
+    User->>Browser: Upload Background
+    Browser->>FileSystem: Read File
+    FileSystem-->>Browser: Image Data
+    Browser->>Canvas: Draw Background
     
-    User->>UI: Add Text Layer
-    UI->>State: Push to layers[]
-    State->>Canvas: Trigger render()
+    User->>Browser: Add Layer
+    Browser->>Canvas: Render Layer
     
-    User->>UI: Adjust Properties
-    UI->>State: Update layer properties
-    State->>Canvas: Trigger render()
-    
-    User->>UI: Save Project
-    UI->>State: Serialize state to JSON
-    State->>FileSystem: Download .xoe file
-    
-    User->>UI: Export PNG
-    UI->>Canvas: canvas.toDataURL()
-    Canvas->>FileSystem: Download .png file
+    User->>Browser: Export PNG
+    Canvas->>Browser: Generate Image Data
+    Browser->>FileSystem: Save File
+    FileSystem-->>User: Download PNG
 ```
 
-### State Management
+### Security Model
 
-The application maintains state through JavaScript variables:
+The application operates within the browser security sandbox:
 
-```javascript
-let projectName = 'Untitled Project';
-let backgroundImage = null;           // Image object
-let backgroundImageData = null;       // Base64 data URI
-let layers = [];                      // Array of layer objects
-let nextLayerId = 1;                  // Auto-incrementing ID
+- **Same-Origin Policy**: All operations respect browser security boundaries
+- **No External Requests**: Zero network activity after initial load
+- **File API Restrictions**: User must explicitly select files
+- **Canvas Tainting**: Respects CORS policies for image sources
+
+## Project Structure
+
+```
+xsukax-Overlay-Studio/
+│
+├── index.html          # Complete application (single file)
+│   ├── HTML Structure  # Document markup
+│   ├── CSS Styles      # Embedded styling
+│   └── JavaScript      # Application logic
+│
+├── README.md           # This documentation
+└── LICENSE             # GPL v3.0 license text
 ```
 
-### Layer Object Schema
+## Roadmap and Future Enhancements
 
-**Text Layer**:
-```json
-{
-  "id": 1,
-  "type": "text",
-  "enabled": true,
-  "text": "Sample Text",
-  "x": 50,
-  "y": 50,
-  "fontSize": 48,
-  "fontFamily": "Arial",
-  "color": "#FF6B6B",
-  "rotation": 0,
-  "flipHorizontal": false,
-  "flipVertical": false,
-  "opacity": 255,
-  "bold": false,
-  "italic": false,
-  "underline": false
-}
-```
+Potential features for future versions:
 
-**Image Layer**:
-```json
-{
-  "id": 2,
-  "type": "image",
-  "enabled": true,
-  "imageData": "data:image/png;base64,...",
-  "imageName": "overlay.png",
-  "x": 50,
-  "y": 50,
-  "width": 150,
-  "rotation": 0,
-  "flipHorizontal": false,
-  "flipVertical": false,
-  "opacity": 255
-}
-```
+- [ ] Undo/Redo functionality
+- [ ] Layer grouping and naming
+- [ ] Text shadow and stroke effects
+- [ ] Image filters (blur, brightness, contrast)
+- [ ] Gradient and pattern fills
+- [ ] Shape drawing tools (rectangles, circles, lines)
+- [ ] Export to multiple formats (JPEG, WebP, SVG)
+- [ ] Batch processing capabilities
+- [ ] Template system
+- [ ] Keyboard shortcuts
+- [ ] Grid and snap-to-grid
+- [ ] Alignment guides
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome and encouraged! Please follow these guidelines:
-
-### Reporting Issues
-
-When reporting bugs or requesting features:
-1. Check existing issues to avoid duplicates
-2. Provide a clear, descriptive title
-3. Include steps to reproduce (for bugs)
-4. Specify browser and operating system
-5. Attach screenshots or example `.xoe` files if relevant
-
-### Pull Requests
+Contributions are welcome! To contribute to xsukax Overlay Studio:
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature-name`
-3. Make your changes with clear, concise commits
-4. Test thoroughly across different browsers
-5. Update documentation if necessary
-6. Submit a pull request with a detailed description
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Make your changes to `index.html`
+4. Test thoroughly across multiple browsers
+5. Commit your changes (`git commit -m 'Add AmazingFeature'`)
+6. Push to the branch (`git push origin feature/AmazingFeature`)
+7. Open a Pull Request
 
-### Development Guidelines
+### Contribution Guidelines
 
-- Maintain the single-file architecture
-- Avoid introducing external dependencies
+- Maintain single-file architecture
+- Keep code readable and well-commented
 - Preserve privacy-first design principles
-- Follow existing code style and conventions
-- Ensure backward compatibility with existing `.xoe` files
-- Test with various image formats and sizes
+- Test in at least 3 modern browsers
+- Update README.md if adding features
+- Follow existing code style
 
-### Code Style
+## Support
 
-- Use meaningful variable and function names
-- Add comments for complex logic
-- Maintain consistent indentation (4 spaces)
-- Use ES6+ JavaScript features where appropriate
-- Keep functions focused and modular
+**Issues and Questions:**
+- Open an issue on [GitHub Issues](https://github.com/xsukax/xsukax-Overlay-Studio/issues)
+- Check existing issues before creating new ones
+- Provide browser version and steps to reproduce bugs
 
-## 📄 Licensing Information
+**Community:**
+- Watch the repository for updates
+- Star the project if you find it useful
+- Share feedback and feature requests
 
-This project is licensed under the **GNU General Public License v3.0** (GPL-3.0).
+## License
 
-### Key License Terms
-
-**Freedom to Use**: You may use this software for any purpose, including commercial applications.
-
-**Freedom to Study**: You have the right to study how the program works and adapt it to your needs. Access to the source code is a prerequisite for this.
-
-**Freedom to Redistribute**: You may redistribute copies of the software to help others.
-
-**Freedom to Improve**: You may distribute modified versions of the software, allowing the whole community to benefit from your improvements.
-
-### Copyleft Provision
-
-Any derivative works or modifications must also be distributed under GPL-3.0. This ensures that all versions of the software remain free and open source.
-
-### License Text
-
-The complete license text is available in the [LICENSE](LICENSE) file in the repository or at:
-https://www.gnu.org/licenses/gpl-3.0.en.html
-
-### Copyright Notice
+This project is licensed under the **GNU General Public License v3.0**.
 
 ```
-xsukax Overlay Studio
+xsukax Overlay Studio - Privacy-focused image overlay editor
 Copyright (C) 2025 xsukax
 
 This program is free software: you can redistribute it and/or modify
@@ -534,20 +513,36 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 ```
 
-## 🙏 Acknowledgments
+### What This Means
 
-- GitHub for design inspiration
-- The open-source community for best practices and standards
-- Contributors and users providing feedback and suggestions
+- ✅ **Freedom to Use**: Use the software for any purpose
+- ✅ **Freedom to Study**: Examine and understand how it works
+- ✅ **Freedom to Modify**: Change the software to suit your needs
+- ✅ **Freedom to Share**: Distribute copies to help others
+- ✅ **Copyleft**: Modifications must also be GPL v3.0
 
-## 📞 Support
+For the complete license text, see the [LICENSE](LICENSE) file or visit [GNU GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
-- **Issues**: Report bugs or request features via [GitHub Issues](https://github.com/xsukax/xsukax-Overlay-Studio/issues)
-- **Documentation**: Refer to this README for comprehensive guidance
+## Acknowledgments
 
+- Built with HTML5 Canvas API
+- Inspired by modern graphics editing workflows
+- Designed with privacy and user sovereignty in mind
+- Created for the open-source community
+
+## Project Links
+
+- **Repository**: [https://github.com/xsukax/xsukax-Overlay-Studio](https://github.com/xsukax/xsukax-Overlay-Studio)
+- **Issues**: [https://github.com/xsukax/xsukax-Overlay-Studio/issues](https://github.com/xsukax/xsukax-Overlay-Studio/issues)
+- **License**: [GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 ---
 
-**Made with ❤️ by the open-source community | Protecting your privacy, one layer at a time**
+**Made with ❤️ for privacy-conscious creators**
+
+*Your data stays yours. Always.*
